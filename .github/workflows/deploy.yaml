@@ -1,0 +1,36 @@
+name: Deploy to Hugging Face
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.HF_TOKEN != '' && secrets.HF_SPACE_URL != '' }}
+    steps:
+
+      # Récuperation du code dans un runner
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Configuration Git
+      - name: Configure Git
+        run: |
+          git config --global user.email "${{ secrets.HF_GIT_EMAIL || 'actions@github.com' }}"
+          git config --global user.name  "${{ secrets.HF_GIT_NAME  || 'github-actions' }}"
+          git lfs install
+
+      # Ajout des remotes vers Hugging face
+      - name: Add space Hugging Face
+        run: |
+          SPACE_URL_AUTH=$(echo "${{ secrets.HF_SPACE_URL }}" | sed "s#https://#https://user:${{ secrets.HF_TOKEN }}@#")
+          git remote add space "$SPACE_URL_AUTH" || git remote set-url space "$SPACE_URL_AUTH"
+
+      - name: Push to Space
+        run: git push space HEAD:main --force
