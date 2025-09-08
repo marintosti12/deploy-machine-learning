@@ -2,37 +2,41 @@ name: Deploy to Hugging Face
 
 on:
   workflow_run:
-    workflows: ["CI"]          
+    workflows: ["CI"]
     branches: [ main ]
     types: [completed]
   workflow_dispatch: {}
-  
+
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: deploy-${{ github.event.workflow_run.head_branch || 'main' }}
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ secrets.HF_TOKEN != '' && secrets.HF_SPACE_URL != '' }}
-    steps:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
-      # Récuperation du code dans un runner
+    steps:
+      # Récupération du code
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Configuration Git
+      # Configuration Git (ne sert à rien si secrets absents, on le conditionne aussi)
       - name: Configure Git
+        if: ${{ secrets.HF_TOKEN && secrets.HF_SPACE_URL }}
         run: |
           git config --global user.email "${{ secrets.HF_GIT_EMAIL || 'actions@github.com' }}"
           git config --global user.name  "${{ secrets.HF_GIT_NAME  || 'github-actions' }}"
           git lfs install
 
-      # Ajout des remotes vers Hugging face
+      # Ajout du remote vers Hugging Face
       - name: Add space Hugging Face
+        if: ${{ secrets.HF_TOKEN && secrets.HF_SPACE_URL }}
         run: |
           SPACE_URL_AUTH=$(echo "${{ secrets.HF_SPACE_URL }}" | sed "s#https://#https://user:${{ secrets.HF_TOKEN }}@#")
           git remote add space "$SPACE_URL_AUTH" || git remote set-url space "$SPACE_URL_AUTH"
 
+      # Push pour déclencher le build & déploiement
       - name: Push to Space
+        if: ${{ secrets.HF_TOKEN && secrets.HF_SPACE_URL }}
         run: git push space HEAD:main --force
