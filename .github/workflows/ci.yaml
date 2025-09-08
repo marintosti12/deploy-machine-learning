@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [ "3.10", "3.11", "3.12" ]
+        python-version: [ "3.12" ]
 
     steps:
       - name: Checkout
@@ -42,6 +42,7 @@ jobs:
       - name: Install deps (no dev)
         run: poetry install --no-interaction --no-ansi
 
+      # Ruff est un linter et formateur de code Python
       - name: Lint (ruff)
         run: |
           poetry run python -m pip install ruff
