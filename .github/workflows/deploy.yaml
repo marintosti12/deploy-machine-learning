@@ -27,6 +27,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true  
 
       # garde-fou: si secrets manquants, on sort proprement
       - name: Guard secrets
