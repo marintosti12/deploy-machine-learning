@@ -42,7 +42,6 @@ jobs:
         run: |
           git config --global user.email "${HF_GIT_EMAIL}"
           git config --global user.name  "${HF_GIT_NAME}"
-          git lfs install
 
       - name: Push to Space
         run: |
