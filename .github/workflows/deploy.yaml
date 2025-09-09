@@ -38,6 +38,19 @@ jobs:
           echo "HF secrets manquants, on skip le déploiement."
           exit 0
 
+      - name: Prepare snapshot (no binaries)
+        shell: bash
+        run: |
+          # Ignore les artefacts ML (au cas où)
+          printf "\n# ML artifacts\n*.joblib\n*.pkl\n*.pt\n*.onnx\n" >> .gitignore
+          git rm -r --cached notebook/*.joblib || true
+
+          # Crée une branche SANS historique avec l'état courant
+          git switch --orphan hfdeploy
+          git add -A
+          git commit -m "Space deploy snapshot ${GITHUB_SHA}"
+
+
       - name: Configure Git
         run: |
           git config --global user.email "${HF_GIT_EMAIL}"
