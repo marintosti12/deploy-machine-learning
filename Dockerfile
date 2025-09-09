@@ -5,6 +5,10 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PYTHONUNBUFFERED=1 \
     PORT=7860
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Créer l'utilisateur exigé par Spaces et passer en non-root
 RUN useradd -m -u 1000 user
 USER user
