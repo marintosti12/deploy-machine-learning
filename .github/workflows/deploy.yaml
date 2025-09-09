@@ -44,6 +44,27 @@ jobs:
           git config user.email "${HF_GIT_EMAIL:-actions@github.com}"
           git config user.name  "${HF_GIT_NAME:-github-actions}"
 
+
+
+      - name: Convert binaries to Git LFS
+        shell: bash
+        run: |
+          set -e
+
+          # 1) Activer LFS et déclarer les patterns de binaires
+          git lfs install
+          git lfs track "*.joblib" "*.pkl" "*.pt" "*.onnx"
+          git add .gitattributes
+          git commit -m "ci: track ML artifacts with LFS for Space push" || true
+
+          # 2) Réécrire l'historique LOCAL pour convertir les blobs en pointeurs LFS
+          #    (ne modifie PAS ton repo GitHub car on ne pousse pas vers origin)
+          git lfs migrate import --everything --include="*.joblib,notebook/df.joblib,*.pkl,*.pt,*.onnx"
+
+          # 3) (Optionnel) vérifier l'état LFS
+          git lfs status || true
+
+
       - name: Push to Space
         run: |
           SPACE_URL_AUTH=$(echo "$HF_SPACE_URL" | sed "s#https://#https://user:${HF_TOKEN}@#")
