@@ -38,25 +38,28 @@ jobs:
           echo "HF secrets manquants, on skip le déploiement."
           exit 0
 
+      - name: Configure Git identity (local)
+        shell: bash
+        run: |
+          git config user.email "${HF_GIT_EMAIL:-actions@github.com}"
+          git config user.name  "${HF_GIT_NAME:-github-actions}"
+
       - name: Prepare snapshot (no history, no binaries)
         shell: bash
         run: |
-          # 1) Crée une branche orpheline (il faut un working tree clean)
+          # 1) Branche orpheline
           git switch --orphan hfdeploy
-
-          # 2) Réinitialise l'index pour repartir propre sur l'état du working tree
           git reset
 
-          # 3) Ajoute les patterns d'ignore AVANT de stagier les fichiers
+          # 2) Ignore les artefacts ML
           printf "\n# ML artifacts\n*.joblib\n*.pkl\n*.pt\n*.onnx\n" >> .gitignore
 
-          # 4) (optionnel) si un .joblib est déjà indexé, enlève-le sans erreur si pas de match
+          # 3) Retire de l'index si jamais ça match (silencieux sinon)
           git rm -r --cached --ignore-unmatch -- notebook/*.joblib
 
-          # 5) Stage tout ce qui n’est pas ignoré et commit la snapshot
+          # 4) Commit de la snapshot
           git add -A
           git commit -m "Space deploy snapshot ${GITHUB_SHA}"
-
 
       - name: Configure Git
         run: |
