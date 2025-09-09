@@ -38,15 +38,22 @@ jobs:
           echo "HF secrets manquants, on skip le déploiement."
           exit 0
 
-      - name: Prepare snapshot (no binaries)
+      - name: Prepare snapshot (no history, no binaries)
         shell: bash
         run: |
-          # Ignore les artefacts ML (au cas où)
-          printf "\n# ML artifacts\n*.joblib\n*.pkl\n*.pt\n*.onnx\n" >> .gitignore
-          git rm -r --cached notebook/*.joblib || true
-
-          # Crée une branche SANS historique avec l'état courant
+          # 1) Crée une branche orpheline (il faut un working tree clean)
           git switch --orphan hfdeploy
+
+          # 2) Réinitialise l'index pour repartir propre sur l'état du working tree
+          git reset
+
+          # 3) Ajoute les patterns d'ignore AVANT de stagier les fichiers
+          printf "\n# ML artifacts\n*.joblib\n*.pkl\n*.pt\n*.onnx\n" >> .gitignore
+
+          # 4) (optionnel) si un .joblib est déjà indexé, enlève-le sans erreur si pas de match
+          git rm -r --cached --ignore-unmatch -- notebook/*.joblib
+
+          # 5) Stage tout ce qui n’est pas ignoré et commit la snapshot
           git add -A
           git commit -m "Space deploy snapshot ${GITHUB_SHA}"
 
