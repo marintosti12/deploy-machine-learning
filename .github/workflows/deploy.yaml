@@ -2,8 +2,8 @@ name: Deploy to Hugging Face
 
 on:
   workflow_run:
-    workflows: ["CI"]          # doit correspondre à name: CI dans ton CI
-    branches: [ main ]         # base branch concernée
+    workflows: ["CI"]          
+    branches: [ main ]         
     types: [completed]
   workflow_dispatch: {}
 
@@ -14,10 +14,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # ⬇️ NE se lance que si la CI a réussi ET si c'était une CI déclenchée par un PUSH (donc après merge)
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
 
-    # on expose les secrets en env (utilisables dans les steps)
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_SPACE_URL: ${{ secrets.HF_SPACE_URL }}
@@ -31,7 +29,6 @@ jobs:
           fetch-depth: 0
           lfs: true  
 
-      # garde-fou: si secrets manquants, on sort proprement
       - name: Guard secrets
         if: ${{ !env.HF_TOKEN || !env.HF_SPACE_URL }}
         run: |
@@ -44,24 +41,18 @@ jobs:
           git config user.email "${HF_GIT_EMAIL:-actions@github.com}"
           git config user.name  "${HF_GIT_NAME:-github-actions}"
 
-
-
       - name: Convert binaries to Git LFS
         shell: bash
         run: |
           set -e
-
-          # 1) Activer LFS et déclarer les patterns de binaires
           git lfs install
           git lfs track "*.joblib" "*.pkl" "*.pt" "*.onnx"
           git add .gitattributes
           git commit -m "ci: track ML artifacts with LFS for Space push" || true
 
-          # 2) Réécrire l'historique LOCAL pour convertir les blobs en pointeurs LFS
-          #    (ne modifie PAS ton repo GitHub car on ne pousse pas vers origin)
+         
           git lfs migrate import --everything --include="*.joblib,notebook/df.joblib,*.pkl,*.pt,*.onnx"
 
-          # 3) (Optionnel) vérifier l'état LFS
           git lfs status || true
 
 
