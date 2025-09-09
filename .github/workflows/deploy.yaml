@@ -38,23 +38,32 @@ jobs:
           echo "HF secrets manquants, on skip le déploiement."
           exit 0
 
-      - name: Prepare snapshot (no binaries)
+      - name: Configure Git identity (local)
         shell: bash
         run: |
-          # Ignore les artefacts ML (au cas où)
-          printf "\n# ML artifacts\n*.joblib\n*.pkl\n*.pt\n*.onnx\n" >> .gitignore
-          git rm -r --cached notebook/*.joblib || true
+          git config user.email "${HF_GIT_EMAIL:-actions@github.com}"
+          git config user.name  "${HF_GIT_NAME:-github-actions}"
 
-          # Crée une branche SANS historique avec l'état courant
-          git switch --orphan hfdeploy
-          git add -A
-          git commit -m "Space deploy snapshot ${GITHUB_SHA}"
 
-      - name: Configure Git
+
+      - name: Convert binaries to Git LFS
+        shell: bash
         run: |
-          git config --global user.email "${HF_GIT_EMAIL}"
-          git config --global user.name  "${HF_GIT_NAME}"
+          set -e
+
+          # 1) Activer LFS et déclarer les patterns de binaires
           git lfs install
+          git lfs track "*.joblib" "*.pkl" "*.pt" "*.onnx"
+          git add .gitattributes
+          git commit -m "ci: track ML artifacts with LFS for Space push" || true
+
+          # 2) Réécrire l'historique LOCAL pour convertir les blobs en pointeurs LFS
+          #    (ne modifie PAS ton repo GitHub car on ne pousse pas vers origin)
+          git lfs migrate import --everything --include="*.joblib,notebook/df.joblib,*.pkl,*.pt,*.onnx"
+
+          # 3) (Optionnel) vérifier l'état LFS
+          git lfs status || true
+
 
       - name: Push to Space
         run: |
