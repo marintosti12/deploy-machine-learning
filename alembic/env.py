@@ -1,5 +1,6 @@
 from __future__ import annotations
 from logging.config import fileConfig
+import os
 
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
@@ -15,7 +16,8 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def get_url() -> str:
-    return settings.DATABASE_URL
+    url = os.getenv("DATABASE_URL")
+    return url
 
 def run_migrations_offline() -> None:
     """Mode offline : pas d'engine, juste l'URL."""

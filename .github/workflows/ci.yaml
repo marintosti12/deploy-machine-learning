@@ -28,7 +28,6 @@ jobs:
 
     env:
       DATABASE_URL: postgresql+psycopg2://ci:ci@localhost:5432/futurisys_ci
-      ALEMBIC_DATABASE_URL: postgresql+asyncpg://ci:ci@localhost:5432/futurisys_ci
 
     steps:
       - name: Checkout
