@@ -4,3 +4,5 @@ from main import app
 
 client = TestClient(app)
 
+def test_root_ok():
+   assert True
