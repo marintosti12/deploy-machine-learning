@@ -11,50 +11,66 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
-    strategy:
-      matrix:
-        python-version: [ "3.12" ]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: futurisys_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U ci -d futurisys_ci"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DATABASE_URL: postgresql+psycopg2://ci:ci@localhost:5432/futurisys_ci
+      ALEMBIC_DATABASE_URL: postgresql+asyncpg://ci:ci@localhost:5432/futurisys_ci
 
     steps:
-      # Récuperation du code
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Configuration de python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12"
 
-      # Installation de poetry
       - name: Install Poetry
         uses: abatilo/actions-poetry@v3
         with:
           poetry-version: "1.8.3"
 
-      # Setup cache poety et env
       - name: Cache Poetry virtualenv
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/pypoetry
             .venv
-          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+          key: ${{ runner.os }}-poetry-3.12-${{ hashFiles('**/poetry.lock') }}
 
-
-      # Install de poetry
-      - name: Install deps (no dev)
+      - name: Install deps
         run: poetry install --no-interaction --no-ansi
 
-      # Ruff est un linter et formateur de code Python
+      - name: Wait for Postgres
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U ci -d futurisys_ci && break
+            sleep 2
+          done
+
+      - name: Run Alembic migrations
+        run: PYTHONPATH=./src poetry run alembic upgrade head
+
       - name: Lint (ruff)
         run: |
           poetry run python -m pip install ruff
           poetry run ruff check .
 
-      # Test avec pytest
       - name: Tests (pytest + coverage)
         run: |
           poetry run python -m pip install pytest pytest-cov
