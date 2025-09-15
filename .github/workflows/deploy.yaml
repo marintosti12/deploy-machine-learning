@@ -21,6 +21,8 @@ jobs:
       HF_SPACE_URL: ${{ secrets.HF_SPACE_URL }}
       HF_GIT_EMAIL: ${{ secrets.HF_GIT_EMAIL || 'actions@github.com' }}
       HF_GIT_NAME:  ${{ secrets.HF_GIT_NAME  || 'github-actions' }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
 
     steps:
       - name: Checkout
@@ -55,6 +57,25 @@ jobs:
 
           git lfs status || true
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: "1.8.3"
+
+      - name: Install deps (with dev)
+        run: poetry install --no-interaction --no-root
+
+      - name: Run Alembic migrations
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: |
+          echo "Migrating DB: $DATABASE_URL"
+          PYTHONPATH=./src poetry run alembic upgrade head
 
       - name: Push to Space
         run: |
