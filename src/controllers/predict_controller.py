@@ -1,15 +1,11 @@
 # src/controllers/predict_controller.py
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional, List
 
-from sqlalchemy.orm import Session
 from config.db import SessionLocal
 from models.ml import MLModel 
 
 # Schemas
 from models.ml_inputs import MLInput
-from schemas.ModelFeatures import ModelFeatures
 
 import pandas as pd
 from model_loader import load_model           
