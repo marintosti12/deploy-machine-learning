@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from sqlalchemy.orm import Session
 from config.db import SessionLocal       
 from models.ml import MLModel           
 
