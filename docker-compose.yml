@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16
+    container_name: futurisys-db
+    environment:
+      POSTGRES_USER: futu
+      POSTGRES_PASSWORD: futu_pass
+      POSTGRES_DB: futurisys
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U futu -d futurisys"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  pgdata:
