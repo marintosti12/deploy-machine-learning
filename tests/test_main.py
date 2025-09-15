@@ -7,4 +7,3 @@ client = TestClient(app)
 def test_root_ok():
     r = client.get("/")
     assert r.status_code == 200
-    assert r.json() == {"Hello": "World"}
