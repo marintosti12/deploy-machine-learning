@@ -33,7 +33,7 @@ Elle permet de :
 
 ### 1. Cloner le dépôt
 ~~~bash
-git clone https://github.com/ton-compte/deploy-machine-learning.git
+git clone https://github.com/marintosti12/deploy-machine-learning.git
 cd deploy-machine-learning
 ~~~
 
@@ -59,14 +59,14 @@ HF_TOKEN= Token Hugging Face
 
 ### Démarrer la base
 ~~~bash
-docker compose up -d db
+docker compose up -d
 ~~~
 
 
 ### 5. Lancer l’API
 
 ~~~bash
-poetry run uvicorn src.main:app --reload
+poetry run uvicorn main:app --reload --app-dir src
 ~~~
 
 
