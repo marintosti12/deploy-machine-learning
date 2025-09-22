@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body, status
 
-from config.db import SessionLocal, get_db
+from config.db import get_db
 from models.ml import MLModel 
 
 # Schemas

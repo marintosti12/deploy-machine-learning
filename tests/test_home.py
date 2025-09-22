@@ -5,7 +5,6 @@ from sqlalchemy.orm import sessionmaker
 from main import app
 from config.db import get_db
 
-from config.db import Base
 from models.ml import MLModel
 
 import uuid
