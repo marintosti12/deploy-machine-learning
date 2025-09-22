@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 from sqlalchemy import pool
 
 from src.config.db import Base
-
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 # Alembic Config
 config = context.config
 if config.config_file_name is not None:

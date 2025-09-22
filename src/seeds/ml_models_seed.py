@@ -1,17 +1,15 @@
-# src/seeds/ml_models_seed.py
 import os
 from datetime import datetime, timezone
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
-# (optionnel) charge .env automatiquement
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except Exception:
     pass
 
-DATABASE_URL = os.environ["DATABASE_URL"]  # ex: postgresql+psycopg2://...
+DATABASE_URL = os.environ["DATABASE_URL"]  
 engine = create_engine(DATABASE_URL, future=True)
 
 UPSERT = text("""
