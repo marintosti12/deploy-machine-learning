@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from config.db import get_db
 from models.ml import MLModel
 
-router = APIRouter(prefix="/models", tags=["Models"])
+router = APIRouter(tags=["Models"])
 
 
 class MLModelOut(BaseModel):

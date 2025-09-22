@@ -146,7 +146,7 @@ def batch_predict(
 
             db.add(
                 MLOutput(
-                    input_id=str(objs[idx].id),
+                    input_id=objs[idx].id,
                     prediction=label,
                     prob=float(p[i]),
                 )

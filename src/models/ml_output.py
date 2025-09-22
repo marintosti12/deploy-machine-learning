@@ -22,7 +22,7 @@ class MLOutput(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-    input_id: Mapped[str] = mapped_column(
+    input_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("ml_inputs.id", ondelete="CASCADE"), nullable=False
     )
 
