@@ -28,6 +28,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql+asyncpg://ci:ci@localhost:5432/futurisys_ci
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
     steps:
       - name: Checkout
