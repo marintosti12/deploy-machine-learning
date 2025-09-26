@@ -18,6 +18,8 @@ jobs:
           POSTGRES_USER: ci
           POSTGRES_PASSWORD: ci
           POSTGRES_DB: futurisys_ci
+          APP_ENV: test
+
         ports:
           - 5432:5432
         options: >-

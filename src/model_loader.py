@@ -22,7 +22,7 @@ def _load_local(name: str) -> Any:
 @lru_cache(maxsize=1)
 def load_model(name) -> Any:
 
-    if ENV in ("dev", "test"):
+    if ENV in ("dev"):
         return _load_local(name)
      
     hf_path = hf_hub_download(
