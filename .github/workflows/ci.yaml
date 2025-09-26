@@ -18,7 +18,6 @@ jobs:
           POSTGRES_USER: ci
           POSTGRES_PASSWORD: ci
           POSTGRES_DB: futurisys_ci
-          APP_ENV: test
 
         ports:
           - 5432:5432
@@ -31,6 +30,8 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://ci:ci@localhost:5432/futurisys_ci
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      APP_ENV: test
+
 
     steps:
       - name: Checkout
