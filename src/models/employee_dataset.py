@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import BigInteger, Integer, String, DateTime
 from .base import Base

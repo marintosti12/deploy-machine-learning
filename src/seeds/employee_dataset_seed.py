@@ -1,4 +1,6 @@
-import os, csv, re
+import os
+import csv
+import re
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
@@ -19,14 +21,18 @@ YES = {"oui", "y", "true", "1"}
 NO  = {"non", "n", "false", "0"}
 
 def map_bool_to_int(v: str | None):
-    if v is None: return None
+    if v is None: 
+        return None
     s = str(v).strip().lower()
-    if s in YES: return 1
-    if s in NO:  return 0
+    if s in YES: 
+        return 1
+    if s in NO: 
+        return 0
     return None
 
 def map_percent_to_int(v: str | None):
-    if not v: return None
+    if not v: 
+        return None
     m = re.search(r"-?\d+", str(v))
     return int(m.group(0)) if m else None
 
