@@ -58,7 +58,7 @@ HF_TOKEN= Token Hugging Face
 ### 4. Base de données (PostgreSQL)
 
 ~~~bash
-docker compose up -d
+sudo docker compose up -d
 ~~~
 
 
