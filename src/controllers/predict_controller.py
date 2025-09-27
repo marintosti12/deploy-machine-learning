@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException, Body, status
 from config.db import get_db
 from models.ml import MLModel 
 
-# Schemas
 from models.ml_inputs import MLInput
 from models.ml_output import MLOutput
 

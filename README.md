@@ -52,6 +52,7 @@ Crée un fichier **.env** à la racine :
 DATABASE_URL=postgresql+psycopg2://futu:futu_pass@localhost:5432/futurisys
 # Hugging Face
 HF_TOKEN= Token Hugging Face
+HF_REPO_ID= Repo Hugging Face
 ~~~
 
 
@@ -62,7 +63,6 @@ sudo docker compose up -d
 ~~~
 
 🗄️ Base de données
-## 📊 Modèle de données
 
 ~~~mermaid
 classDiagram
@@ -178,11 +178,31 @@ classDiagram
   MLInput "1" --> "0..*" MLOutput
 ~~~
 
-### 5. Lancer l’API
+### 5. Lancer Migrations
+
+~~~bash
+export DATABASE_URL='postgresql+asyncpg://futu:futu_pass@localhost:5432/futurisys'
+poetry run alembic upgrade head
+~~~
+
+### 6. Lancer Seeder
+
+~~~bash
+export DATABASE_URL='postgresql+psycopg2://futu:futu_pass@localhost:5432/futurisys'
+poetry run python src/seeds/ml_models_seed.py 
+~~~
+
+### 7. Lancer l’API
 
 ~~~bash
 poetry run uvicorn main:app --reload --app-dir src
 ~~~
+
+### 8. Huggings Face
+
+Pour générer les artefacts, exécuter les notebooks de machine learning.
+
+Sur Hugging Face (Models), stocker les artefacts du modèle dans le dépôt du Space (models/) et nommer le fichier exactement comme le nom du modèle en base de données.
 
 
 ### 🧹 Qualité de code
