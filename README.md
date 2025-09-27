@@ -112,9 +112,9 @@ classDiagram
     +Int note_evaluation_actuelle
     +String heure_supplementaires
     +Int augementation_salaire_precedente
-    %% Trace optionally which model handled the request
-    .. Traceability ..
   }
+
+  
 
   class MLOutput {
     +String(36) id
@@ -125,8 +125,57 @@ classDiagram
     +String error
   }
 
+  class EmployeeDataset {
+    +BigInteger id  
+    +DateTime created_at  
+    +Integer id_employee  
+
+    +Integer age
+    +String genre
+    +Integer revenu_mensuel
+    +String statut_marital
+    +String departement  
+    +String poste
+
+    +Integer nombre_experiences_precedentes
+    +Integer nombre_heures_travailless
+    +Integer annee_experience_totale
+    +Integer annees_dans_l_entreprise
+    +Integer annees_dans_le_poste_actuel
+
+    +Integer a_quitte_l_entreprise
+
+    +Integer nombre_participation_pee
+    +Integer nb_formations_suivies
+    +Integer nombre_employee_sous_responsabilite
+
+    +Integer code_sondage
+    +Integer distance_domicile_travail
+    +Integer niveau_education
+    +String domaine_etude
+
+    +String ayant_enfants
+    +String frequence_deplacement
+
+    +Integer annees_depuis_la_derniere_promotion
+    +Integer annes_sous_responsable_actuel
+    +Integer satisfaction_employee_environnement
+    +Integer note_evaluation_precedente
+    +Integer niveau_hierarchique_poste
+    +Integer satisfaction_employee_nature_travail
+    +Integer satisfaction_employee_equipe
+    +Integer satisfaction_employee_equilibre_pro_perso
+
+    +String eval_number  
+    +Integer note_evaluation_actuelle
+    +String heure_supplementaires
+    +Integer augementation_salaire_precedente
+
+    +String source_file  
+}
+
   %% Relations
-  MLOutput "1" --> "1" MLInput
+  MLInput "1" --> "0..*" MLOutput
 ~~~
 
 ### 5. Lancer l’API
